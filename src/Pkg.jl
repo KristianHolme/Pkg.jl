@@ -532,15 +532,23 @@ const free = API.free
 
 
 """
-    Pkg.develop(pkg::Union{String, Vector{String}}; io::IO=stderr, preserve=PRESERVE_TIERED, installed=false)
-    Pkg.develop(pkgs::Union{PackageSpec, Vector{PackageSpec}}; io::IO=stderr, preserve=PRESERVE_TIERED, installed=false)
+    Pkg.develop(pkg::Union{String, Vector{String}}; io::IO=stderr, preserve=PRESERVE_TIERED, shared=true)
+    Pkg.develop(pkgs::Union{PackageSpec, Vector{PackageSpec}}; io::IO=stderr, preserve=PRESERVE_TIERED, shared=true)
 
 Make a package available for development by tracking it by path.
 If `pkg` is given with only a name or by a URL, the package will be downloaded
-to the location specified by the environment variable `JULIA_PKG_DEVDIR`, with
-`joinpath(DEPOT_PATH[1],"dev")` being the default.
+to a development directory controlled by the `shared` keyword:
 
-If `pkg` is given as a local path, the package at that path will be tracked.
+  * `shared=true` (default): use the shared dev directory from the environment variable `JULIA_PKG_DEVDIR`, with
+    `joinpath(DEPOT_PATH[1],"dev")` being the default.
+  * `shared=false`: clone into a `dev` directory next to the active project's `Project.toml`; paths are recorded in the
+    manifest relative to the project.
+
+In Pkg mode, `pkg> develop --shared` (the default) corresponds to `shared=true`, and `pkg> develop --local` corresponds to
+`shared=false`.
+
+If `pkg` is given as a local path to an existing directory, that path is tracked and `shared` does not choose a different
+location.
 
 The preserve strategies offered by `Pkg.add` are also available via the `preserve` kwarg.
 See [`Pkg.add`](@ref) for more information.
@@ -549,6 +557,9 @@ See [`Pkg.add`](@ref) for more information.
 ```julia
 # By name
 Pkg.develop("Example")
+
+# By name, project-local dev directory
+Pkg.develop("Example"; shared = false)
 
 # By url
 Pkg.develop(url="https://github.com/JuliaLang/Compat.jl")

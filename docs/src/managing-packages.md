@@ -243,6 +243,9 @@ If we try to `dev` a package at some branch that already exists at `~/.julia/dev
 If `dev` is used on a local path, that path to that package is recorded and used when loading that package.
 The path will be recorded relative to the project file, unless it is given as an absolute path.
 
+Instead of the shared dev directory above, you can clone into a `dev` folder next to the active project's `Project.toml` using `pkg> dev --local Example` or `Pkg.develop("Example"; shared = false)`; see `?Pkg.develop` for details.
+This option only affects where new clones are placed for packages resolved by name or URL, not an explicit local directory you pass to `dev`.
+
 Let's try modify the file at  `~/.julia/dev/Example/src/Example.jl` and add a simple function:
 
 ```julia
